@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>喵星球 · 品种猫百科</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐱</text></svg>" />
+  <style>
+/* ===== 基础 ===== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #fdf6ee;
+  --card: #ffffff;
+  --ink: #3d3229;
+  --muted: #8a7b6d;
+  --primary: #ff9f43;
+  --primary-dark: #f37f1e;
+  --accent: #c96f3b;
+  --shadow: 0 10px 30px rgba(93, 64, 32, 0.12);
+  --radius: 18px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { display: block; }
+
+/* ===== 导航 ===== */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(253, 246, 238, 0.9);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(201, 111, 59, 0.12);
+}
+
+.nav-inner {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.logo span {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-left: 6px;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 26px;
+}
+
+.nav-links a {
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover { color: var(--primary-dark); }
+
+/* ===== Hero ===== */
+.hero {
+  position: relative;
+  text-align: center;
+  padding: 96px 24px 110px;
+  background:
+    radial-gradient(circle at 12% 20%, rgba(255, 159, 67, 0.18), transparent 42%),
+    radial-gradient(circle at 88% 15%, rgba(255, 214, 165, 0.35), transparent 45%),
+    linear-gradient(180deg, #fbeede 0%, var(--bg) 100%);
+  overflow: hidden;
+}
+
+.hero-title {
+  font-size: clamp(34px, 6vw, 56px);
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.hero-title .highlight {
+  color: var(--primary-dark);
+  position: relative;
+}
+
+.hero-sub {
+  margin: 20px auto 34px;
+  max-width: 620px;
+  font-size: 17px;
+  color: var(--muted);
+}
+
+.hero-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+.btn {
+  display: inline-block;
+  padding: 13px 30px;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.btn:hover { transform: translateY(-2px); }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(243, 127, 30, 0.35);
+}
+
+.btn-primary:hover { box-shadow: 0 12px 26px rgba(243, 127, 30, 0.45); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--primary-dark);
+  border: 2px solid var(--primary);
+}
+
+.btn-ghost:hover { background: rgba(255, 159, 67, 0.1); }
+
+/* Hero 装饰爪印 */
+.paw {
+  position: absolute;
+  font-size: 30px;
+  opacity: 0.45;
+  animation: float 4s ease-in-out infinite;
+}
+
+.paw-1 { top: 22%; left: 8%; animation-delay: 0s; }
+.paw-2 { top: 30%; right: 10%; font-size: 22px; animation-delay: 1.2s; }
+.paw-3 { bottom: 16%; left: 16%; font-size: 24px; animation-delay: 2s; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(-8deg); }
+  50% { transform: translateY(-14px) rotate(8deg); }
+}
+
+/* ===== 主体 ===== */
+.main {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 20px 24px 80px;
+}
+
+.section-head { text-align: center; margin-bottom: 28px; }
+
+.section-title {
+  font-size: clamp(26px, 4vw, 34px);
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.section-desc { color: var(--muted); font-size: 15px; }
+
+/* 筛选按钮 */
+.filters {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 34px;
+}
+
+.filter-btn {
+  padding: 9px 24px;
+  border-radius: 999px;
+  border: 2px solid rgba(201, 111, 59, 0.25);
+  background: var(--card);
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-btn:hover { border-color: var(--primary); color: var(--primary-dark); }
+
+.filter-btn.active {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(243, 127, 30, 0.3);
+}
+
+/* ===== 卡片网格 ===== */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 26px;
+}
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.25s, box-shadow 0.25s;
+  animation: fadeUp 0.5s ease both;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px rgba(93, 64, 32, 0.18);
+}
+
+.card-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  background: #f0e6d8;
+}
+
+.card-body { padding: 16px 18px 18px; }
+
+.card-name {
+  font-size: 18px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-name .en { font-size: 13px; font-weight: 600; color: var(--muted); }
+
+.card-tags { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+
+.tag {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #fdf0e0;
+  color: var(--accent);
+}
+
+.tag.cat { background: #eef4ff; color: #4a6fd6; }
+.tag.personality { background: #f2e9ff; color: #8b5fd6; }
+
+.card-desc {
+  margin-top: 10px;
+  font-size: 13.5px;
+  color: var(--muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 空状态 */
+.empty { grid-column: 1 / -1; text-align: center; color: var(--muted); padding: 60px 0; }
+
+/* ===== 养猫贴士 ===== */
+.tips {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 20px 24px 90px;
+}
+
+.tips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 22px;
+}
+
+.tip-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 26px 24px;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s;
+}
+
+.tip-card:hover { transform: translateY(-4px); }
+
+.tip-icon { font-size: 32px; }
+
+.tip-card h3 { margin: 10px 0 8px; font-size: 17px; font-weight: 800; }
+
+.tip-card p { font-size: 14px; color: var(--muted); }
+
+/* ===== 弹窗 ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(45, 30, 18, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 200;
+  animation: fadeIn 0.25s ease;
+}
+
+.modal-overlay[hidden] { display: none; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal {
+  background: var(--card);
+  border-radius: 22px;
+  max-width: 880px;
+  width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+  animation: popIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-close {
+  position: sticky;
+  top: 14px;
+  left: calc(100% - 46px);
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--ink);
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, background 0.2s;
+  z-index: 5;
+}
+
+.modal-close:hover { transform: rotate(90deg); background: var(--primary); color: #fff; }
+
+.modal-body { display: flex; }
+
+.modal-img {
+  width: 46%;
+  min-width: 300px;
+  object-fit: cover;
+  border-radius: 22px 0 0 22px;
+  max-height: 560px;
+}
+
+.modal-info { padding: 34px 34px 40px; flex: 1; }
+
+.modal-name { font-size: 28px; font-weight: 900; }
+
+.modal-en { color: var(--muted); font-size: 14px; margin: 4px 0 14px; }
+
+.tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+
+.tag-row .tag { font-size: 13px; padding: 5px 14px; }
+
+.modal-desc { font-size: 15px; color: #5c4f42; }
+
+.modal-facts {
+  list-style: none;
+  margin: 18px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 20px;
+}
+
+.modal-facts li {
+  font-size: 14px;
+  color: var(--ink);
+  background: #fbf2e6;
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+.modal-facts li b { color: var(--primary-dark); }
+
+.modal-care {
+  background: #eef7ee;
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+
+.modal-care h4 { font-size: 15px; margin-bottom: 6px; color: #3f7d4e; }
+
+.modal-care p { font-size: 14px; color: #57675a; }
+
+/* ===== 页脚 ===== */
+.footer {
+  text-align: center;
+  padding: 26px 20px;
+  color: var(--muted);
+  font-size: 13.5px;
+  border-top: 1px solid rgba(201, 111, 59, 0.12);
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 720px) {
+  .nav-links { display: none; }
+
+  .hero { padding: 64px 20px 80px; }
+
+  .modal-body { flex-direction: column; }
+
+  .modal-img { width: 100%; min-width: 0; max-height: 260px; border-radius: 22px 22px 0 0; }
+
+  .modal-facts { grid-template-columns: 1fr; }
+}
+
+</style>
+</head>
+<body>
+
+  <!-- 顶部导航 -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="#hero" class="logo">🐱 喵星球 <span>品种猫百科</span></a>
+      <ul class="nav-links">
+        <li><a href="#hero">首页</a></li>
+        <li><a href="#breeds">品种大全</a></li>
+        <li><a href="#tips">养猫贴士</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- 首屏 Hero -->
+  <header class="hero" id="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">认识每一只<span class="highlight">小猫咪</span></h1>
+      <p class="hero-sub">从圆脸胖橘到高冷布偶，从优雅暹罗到呆萌折耳——<br />这里收录了最受欢迎的品种猫，带你看懂它们的性格与心事。</p>
+      <div class="hero-actions">
+        <a href="#breeds" class="btn btn-primary">开始探索 🐾</a>
+        <a href="#tips" class="btn btn-ghost">养猫贴士</a>
+      </div>
+    </div>
+    <div class="hero-deco" aria-hidden="true">
+      <span class="paw paw-1">🐾</span>
+      <span class="paw paw-2">🐾</span>
+      <span class="paw paw-3">🐾</span>
+    </div>
+  </header>
+
+  <!-- 品种列表 -->
+  <main class="main" id="breeds">
+    <div class="section-head">
+      <h2 class="section-title">🐈 品种大全</h2>
+      <p class="section-desc">点击卡片可查看详细介绍与饲养建议</p>
+    </div>
+
+    <!-- 分类筛选 -->
+    <div class="filters" id="filters">
+      <button class="filter-btn active" data-cat="all">全部</button>
+      <button class="filter-btn" data-cat="短毛猫">短毛猫</button>
+      <button class="filter-btn" data-cat="长毛猫">长毛猫</button>
+      <button class="filter-btn" data-cat="无毛猫">无毛猫</button>
+    </div>
+
+    <!-- 卡片网格 -->
+    <div class="grid" id="grid"></div>
+  </main>
+
+  <!-- 养猫贴士 -->
+  <section class="tips" id="tips">
+    <div class="section-head">
+      <h2 class="section-title">🛋️ 养猫贴士</h2>
+      <p class="section-desc">无论养什么品种，这几条通用建议都值得收藏</p>
+    </div>
+    <div class="tips-grid">
+      <div class="tip-card">
+        <span class="tip-icon">🍚</span>
+        <h3>科学喂养</h3>
+        <p>选择正规品牌猫粮，按年龄与体重定量喂食，保持充足干净饮水。</p>
+      </div>
+      <div class="tip-card">
+        <span class="tip-icon">🧼</span>
+        <h3>定期清洁</h3>
+        <p>长毛猫需每天梳毛，短毛猫每周一两次；耳道、指甲与猫砂盆要勤打理。</p>
+      </div>
+      <div class="tip-card">
+        <span class="tip-icon">💉</span>
+        <h3>健康免疫</h3>
+        <p>按时接种疫苗、体内外驱虫，定期体检，关注口腔与泌尿健康。</p>
+      </div>
+      <div class="tip-card">
+        <span class="tip-icon">🎮</span>
+        <h3>陪伴玩耍</h3>
+        <p>每天留出互动时间，用逗猫棒、玩具消耗精力，避免猫咪肥胖与抑郁。</p>
+      </div>
+      <div class="tip-card">
+        <span class="tip-icon">🏠</span>
+        <h3>环境安全</h3>
+        <p>封窗防坠、收纳电线与易碎品，提供猫爬架和安静的小窝。</p>
+      </div>
+      <div class="tip-card">
+        <span class="tip-icon">❤️</span>
+        <h3>领养代替购买</h3>
+        <p>无论品种，每只猫都值得被温柔以待。选择猫咪前请确认能陪伴它一生。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 详情弹窗 -->
+  <div class="modal-overlay" id="modal" hidden>
+    <div class="modal">
+      <button class="modal-close" id="modalClose" aria-label="关闭">✕</button>
+      <div class="modal-body">
+        <img class="modal-img" id="modalImg" src="" alt="" />
+        <div class="modal-info">
+          <h2 class="modal-name" id="modalName"></h2>
+          <p class="modal-en" id="modalEn"></p>
+          <div class="tag-row" id="modalTags"></div>
+          <p class="modal-desc" id="modalDesc"></p>
+          <ul class="modal-facts" id="modalFacts"></ul>
+          <div class="modal-care">
+            <h4>🧺 饲养建议</h4>
+            <p id="modalCare"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>🐾 喵星球 · 品种猫百科 — 图片由 AI 生成，信息仅供参考</p>
+  </footer>
+
+  <script>
+/* ===== 品种猫数据 ===== */
+const IMG_BASE = "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image";
+
+const breeds = [
+  {
+    name: "英国短毛猫",
+    en: "British Shorthair",
+    cat: "短毛猫",
+    tags: ["圆脸", "安静", "适合新手"],
+    personality: ["性格温顺", "独立", "黏人"],
+    image: "close-up cat face portrait of a blue-gray British Shorthair cat, round chubby face fully visible facing camera, big copper-orange eyes looking at viewer, plush short coat, centered headshot composition, cream studio background, warm soft lighting, high detail",
+    origin: "英国",
+    weight: "4.0 ~ 8.0 kg",
+    lifespan: "12 ~ 17 年",
+    coat: "短毛 · 密实双层被毛",
+    desc: "英短是猫界的「小圆脸」，自带憨态可掬的橘黄色大眼睛和丰厚饱满的双腮，性格沉稳温和，喜欢安静地陪在你身边，是新手养猫的首选品种之一。",
+    care: "英短易发胖，需控制食量与保证运动；蓝灰色系被毛打理简单，每周梳毛一两次即可。",
+  },
+  {
+    name: "美国短毛猫",
+    en: "American Shorthair",
+    cat: "短毛猫",
+    tags: ["健康", "活泼", "强健"],
+    personality: ["友善", "好动", "聪明"],
+    image: "close-up cat face portrait of a silver classic tabby American Shorthair cat, face fully visible facing camera, vivid green eyes looking at viewer, bold tabby stripes, bold muzzle markings, centered headshot composition, warm natural lighting, high detail",
+    origin: "美国",
+    weight: "3.6 ~ 6.8 kg",
+    lifespan: "15 ~ 20 年",
+    coat: "短毛 · 硬挺防水的毛质",
+    desc: "美短是健壮而活泼的「运动型选手」，标志性的银色虎斑纹帅气干练。它们身体强健、寿命较长，性格友善爱玩，非常适合有小朋友的家庭。",
+    care: "精力旺盛，建议准备猫爬架和互动玩具；被毛短而密，每周梳理两三次减少掉毛。",
+  },
+  {
+    name: "布偶猫",
+    en: "Ragdoll",
+    cat: "长毛猫",
+    tags: ["温柔", "黏人", "仙女颜值"],
+    personality: ["亲人", "温顺", "安静"],
+    image: "close-up cat face portrait of a gorgeous seal point Ragdoll cat, face fully visible facing camera, striking blue eyes looking at viewer, dark brown muzzle and ears with long silky cream fur, centered headshot composition, dreamy soft lighting, high detail",
+    origin: "美国",
+    weight: "4.5 ~ 9.0 kg",
+    lifespan: "12 ~ 17 年",
+    coat: "长毛 · 丝滑无底绒",
+    desc: "布偶猫被称为「猫中仙女」，一身丝绒般的长毛搭配湛蓝眼眸，性格更是温柔到骨子里——抱起来像布偶一样放松，喜欢黏在主人身边。",
+    care: "长毛需每日梳毛防打结；肠胃较敏感，需稳定喂食；价格较高，购买请认准正规猫舍。",
+  },
+  {
+    name: "暹罗猫",
+    en: "Siamese",
+    cat: "短毛猫",
+    tags: ["话痨", "粘人", "贵族气质"],
+    personality: ["爱叫", "聪明", "忠诚"],
+    image: "close-up cat face portrait of an elegant seal point Siamese cat, face fully visible facing camera, brilliant sapphire blue eyes looking at viewer, dark brown mask on muzzle and ears with sleek cream coat, centered headshot composition, clean background, soft lighting, high detail",
+    origin: "泰国",
+    weight: "3.0 ~ 5.0 kg",
+    lifespan: "12 ~ 20 年",
+    coat: "短毛 · 重点色被毛",
+    desc: "暹罗猫是泰国皇室御猫，蓝宝石般的眼睛和深色重点色极具辨识度。它们聪明话痨、黏人热情，会用叫声和你「聊天」，是名副其实的社交小达人。",
+    care: "非常怕孤独，长期独处会抑郁，适合陪伴时间多的家庭；被毛打理简单。",
+  },
+  {
+    name: "缅因猫",
+    en: "Maine Coon",
+    cat: "长毛猫",
+    tags: ["巨无霸", "温顺", "狗系性格"],
+    personality: ["亲人", "聪明", "随和"],
+    image: "close-up cat face portrait of a majestic Maine Coon cat, face fully visible facing camera, large gentle amber eyes looking at viewer, dense brown tabby fur with distinctive tufted ears and fluffy ruff, centered headshot composition, soft window lighting, high detail",
+    origin: "美国",
+    weight: "5.0 ~ 11.0 kg",
+    lifespan: "12 ~ 15 年",
+    coat: "长毛 · 防水的双层被毛",
+    desc: "缅因猫是体型最大的家猫品种之一，成年公猫可达 10kg 以上，但性格却温柔得像只大狗，能学会开门、接飞盘，对家人尤其友善。",
+    care: "食量巨大、开销不低；长毛需要高频梳毛；喜欢攀爬，建议准备大型猫爬架。",
+  },
+  {
+    name: "波斯猫",
+    en: "Persian",
+    cat: "长毛猫",
+    tags: ["优雅", "安静", "贵族范"],
+    personality: ["文静", "温柔", "慵懒"],
+    image: "close-up cat face portrait of a stunning white Persian cat, flat doll-like face fully visible facing camera, calm gentle orange eyes looking at viewer, extremely long fluffy white fur around face, centered headshot composition, elegant soft studio lighting, high detail",
+    origin: "伊朗（波斯）",
+    weight: "3.5 ~ 6.8 kg",
+    lifespan: "12 ~ 17 年",
+    coat: "长毛 · 浓密顺滑",
+    desc: "波斯猫是古典优雅的代名词，扁平面庞配上一身华贵长毛，性情安静慵懒，是「陪伴型」猫咪的典范，适合喜欢安静生活的铲屎官。",
+    care: "扁平脸易有泪痕，需每日清洁眼周；长毛必须每天梳毛并预防毛球；畏寒怕热，注意室温。",
+  },
+  {
+    name: "苏格兰折耳猫",
+    en: "Scottish Fold",
+    cat: "短毛猫",
+    tags: ["折耳", "圆眼睛", "呆萌"],
+    personality: ["温顺", "安静", "粘人"],
+    image: "close-up cat face portrait of an adorable gray Scottish Fold cat, cute folded ears and round chubby face fully visible facing camera, big owl-like amber eyes looking at viewer, centered headshot composition, white background, soft lighting, high detail",
+    origin: "英国",
+    weight: "3.0 ~ 6.0 kg",
+    lifespan: "11 ~ 15 年",
+    coat: "短毛 / 长毛 · 可选",
+    desc: "折耳猫因一对可爱的折耳和圆滚滚的脸蛋圈粉无数，性格温和安静，像只小圆面包一样惹人怜爱，是社交媒体上的「顶流猫猫」。",
+    care: "⚠️ 折耳基因可能伴随骨骼疾病，务必定期体检；如出现关节疼痛症状请及时就医，理性繁育。",
+  },
+  {
+    name: "斯芬克斯猫",
+    en: "Sphynx",
+    cat: "无毛猫",
+    tags: ["无毛", "独特", "暖宝宝"],
+    personality: ["粘人", "好奇", "活泼"],
+    image: "close-up cat face portrait of a Sphynx hairless cat, hairless wrinkled face fully visible facing camera, bright green eyes looking at viewer, large bat-like ears, soft pinkish skin, centered headshot composition, minimalist beige background, warm studio lighting, high detail",
+    origin: "加拿大",
+    weight: "3.0 ~ 5.5 kg",
+    lifespan: "12 ~ 15 年",
+    coat: "无毛 · 仅细微绒毛",
+    desc: "斯芬克斯猫以独特的无毛外貌闻名，触感温热如小暖炉。它们性格极度粘人爱撒娇，好奇心旺盛，是「外表高冷、内心火热」的反差萌代表。",
+    care: "无毛皮脂分泌多，需每周洗澡去油；夏天防晒、冬天保暖，怕冷怕晒需要细心呵护。",
+  },
+  {
+    name: "中华田园猫",
+    en: "Chinese Domestic",
+    cat: "短毛猫",
+    tags: ["皮实", "聪明", "颜值在线"],
+    personality: ["独立", "机警", "忠诚"],
+    image: "close-up cat face portrait of a handsome orange tabby Chinese domestic cat, face fully visible facing camera, bright amber eyes looking at viewer, sleek orange striped coat, playful curious expression, centered headshot composition, sunny window warm natural light, high detail",
+    origin: "中国",
+    weight: "3.0 ~ 6.0 kg",
+    lifespan: "15 ~ 20 年",
+    coat: "短毛 · 品种多样",
+    desc: "橘猫、狸花猫、奶牛猫……中华田园猫是土生土长的「国货之光」。它们身体皮实、聪明机警，颜值与性格俱佳，领养渠道多，性价比满分。",
+    care: "户外流浪史可能带来坏习惯，需耐心社会化；健康好养，是「领养代替购买」的绝佳选择。",
+  },
+  {
+    name: "金渐层",
+    en: "Golden Chinchilla",
+    cat: "短毛猫",
+    tags: ["贵气", "金灿灿", "大饼脸"],
+    personality: ["温顺", "安静", "亲人"],
+    image: "close-up cat face portrait of a luxurious golden chinchilla cat, round doll-like face fully visible facing camera, big green eyes looking at viewer, shimmering golden-tipped fur with black outline, centered headshot composition, warm golden lighting, high detail",
+    origin: "英国",
+    weight: "3.5 ~ 6.5 kg",
+    lifespan: "12 ~ 17 年",
+    coat: "短毛 · 金色渐层被毛",
+    desc: "金渐层是英短的「豪华升级版」，一身如阳光般的金色渐层被毛搭配翠绿眼眸，贵气十足。性格继承了英短的温顺稳重，安静又黏人。",
+    care: "易肥胖，注意控食；渐层色需要护理毛发光泽，可适当补充鱼油和营养。",
+  },
+  {
+    name: "异国短毛猫",
+    en: "Exotic Shorthair",
+    cat: "短毛猫",
+    tags: ["加菲", "大饼脸", "呆萌"],
+    personality: ["温和", "安静", "依赖"],
+    image: "close-up cat face portrait of a cute cream and brown Exotic Shorthair cat, flat round doll face fully visible facing camera, big round orange eyes looking at viewer, chubby cheeks, sleepy sweet expression, centered headshot composition, soft studio lighting, high detail",
+    origin: "美国",
+    weight: "3.5 ~ 6.5 kg",
+    lifespan: "12 ~ 15 年",
+    coat: "短毛 · 短密柔软",
+    desc: "异国短毛猫俗称「加菲猫」，长着一张呆萌的大饼脸和圆溜溜的大眼睛。性格温和安静、黏人爱撒娇，兼具波斯猫的温柔与短毛的易打理。",
+    care: "扁平脸泪痕多，需每日擦拭；鼻腔短易打呼噜，注意呼吸道健康与环境清洁。",
+  },
+  {
+    name: "俄罗斯蓝猫",
+    en: "Russian Blue",
+    cat: "短毛猫",
+    tags: ["银蓝色", "绿宝石眼", "优雅"],
+    personality: ["文静", "聪明", "专一"],
+    image: "close-up cat face portrait of an elegant Russian Blue cat, face fully visible facing camera, luminous emerald green eyes looking at viewer, short dense silver-blue coat, refined aristocratic expression, centered headshot composition, minimal neutral background, soft diffused lighting, high detail",
+    origin: "俄罗斯",
+    weight: "3.0 ~ 5.5 kg",
+    lifespan: "12 ~ 18 年",
+    coat: "短毛 · 银蓝色双层被毛",
+    desc: "俄罗斯蓝猫一身银蓝色的短毛泛着微光，配上绿宝石般的眼眸，气质清冷优雅。它们性格文静内敛，认主后十分忠诚，是「低调贵族」般的存在。",
+    care: "性格敏感怕生，需温柔耐心相处；被毛细腻掉毛少，打理轻松。",
+  },
+];
+
+/* ===== 图片 URL 生成 ===== */
+const imageUrl = (prompt) =>
+  `${IMG_BASE}?prompt=${encodeURIComponent(prompt)}&image_size=square`;
+
+/* ===== 渲染卡片 ===== */
+const grid = document.getElementById("grid");
+const filters = document.getElementById("filters");
+const modal = document.getElementById("modal");
+let currentCat = "all";
+
+function renderGrid() {
+  const list = currentCat === "all" ? breeds : breeds.filter((b) => b.cat === currentCat);
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty">暂无该分类的猫咪，敬请期待 🐾</div>`;
+    return;
+  }
+  grid.innerHTML = list
+    .map(
+      (b) => `
+      <article class="card" data-name="${b.name}" data-id="${b.name}">
+        <img class="card-img" src="${imageUrl(b.image)}" alt="${b.name}" loading="lazy" />
+        <div class="card-body">
+          <div class="card-name">${b.name}<span class="en">${b.en}</span></div>
+          <div class="card-tags">
+            <span class="tag cat">${b.cat}</span>
+            ${b.tags.slice(0, 2).map((t) => `<span class="tag">${t}</span>`).join("")}
+          </div>
+          <p class="card-desc">${b.desc}</p>
+        </div>
+      </article>`
+    )
+    .join("");
+}
+
+/* ===== 筛选 ===== */
+filters.addEventListener("click", (e) => {
+  const btn = e.target.closest(".filter-btn");
+  if (!btn) return;
+  document.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"));
+  btn.classList.add("active");
+  currentCat = btn.dataset.cat;
+  renderGrid();
+});
+
+/* ===== 详情弹窗 ===== */
+grid.addEventListener("click", (e) => {
+  const card = e.target.closest(".card");
+  if (!card) return;
+  const breed = breeds.find((b) => b.name === card.dataset.name);
+  if (!breed) return;
+
+  document.getElementById("modalImg").src = imageUrl(breed.image);
+  document.getElementById("modalImg").alt = breed.name;
+  document.getElementById("modalName").textContent = breed.name;
+  document.getElementById("modalEn").textContent = breed.en;
+  document.getElementById("modalTags").innerHTML =
+    `<span class="tag cat">${breed.cat}</span>` +
+    breed.tags.map((t) => `<span class="tag">${t}</span>`).join("") +
+    breed.personality.map((p) => `<span class="tag personality">${p}</span>`).join("");
+  document.getElementById("modalDesc").textContent = breed.desc;
+  document.getElementById("modalFacts").innerHTML =
+    `<li><b>原产地</b>：${breed.origin}</li>` +
+    `<li><b>体重</b>：${breed.weight}</li>` +
+    `<li><b>寿命</b>：${breed.lifespan}</li>` +
+    `<li><b>被毛</b>：${breed.coat}</li>`;
+  document.getElementById("modalCare").textContent = breed.care;
+
+  modal.hidden = false;
+  document.body.style.overflow = "hidden";
+});
+
+function closeModal() {
+  modal.hidden = true;
+  document.body.style.overflow = "";
+}
+
+document.getElementById("modalClose").addEventListener("click", closeModal);
+modal.addEventListener("click", (e) => {
+  if (e.target === modal) closeModal();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeModal();
+});
+
+/* ===== 初始化 ===== */
+renderGrid();
+
+</script>
+</body>
+</html>
